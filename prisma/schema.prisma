@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Token {
+  id        Int      @id @default(autoincrement())
+  number    Int      // Sequence number
+  displayId String   @default("000") // Formatted ID e.g., A-001
+  status    String   @default("WAITING") // WAITING, SERVING, COMPLETED, SKIPPED
+  type      String   @default("PRINT")   // PRINT, SMS, WA, APP
+  phone     String?  // Optional for SMS/WA
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  startedAt DateTime? // For service duration calculation
+  completedAt DateTime?
+  priority  Int      @default(1) // 1: Standard, 10: VIP
+
+  serviceId Int?
+  service   Service? @relation(fields: [serviceId], references: [id])
+  
+  counterId Int?
+  counter   Counter? @relation(fields: [counterId], references: [id])
+}
+
+model Service {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  prefix      String   @default("A") // e.g., "DOC"
+  startNumber Int      @default(1)
+  description String?
+  isActive    Boolean  @default(true)
+  
+  tokens      Token[]
+  counters    Counter[] // Implicit many-to-many
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Counter {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique // e.g., "Counter 1"
+  isAvailable Boolean  @default(true)
+  tokens      Token[]
+  services    Service[] // Implicit many-to-many
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Setting {
+  id    String @id @default("config")
+  value String // JSON string for flexibility
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  role      String   @default("STAFF") // ADMIN, STAFF
+  createdAt DateTime @default(now())
+}
