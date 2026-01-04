@@ -360,7 +360,13 @@ export default function KioskPage() {
                 background: white;
             }
              /* Start clean on a new page */
-             html, body { margin: 0; padding: 0; width: 80mm; height: 100%; }
+             html, body { margin: 0; padding: 0; width: 80mm; height: 100%; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+             
+             /* Force Logo to Black/White for Thermal Printer */
+             #print-section img {
+                 filter: grayscale(100%) contrast(200%) brightness(0.5);
+                 -webkit-filter: grayscale(100%) contrast(200%) brightness(0.5);
+             }
         }
       `}</style>
 
@@ -472,23 +478,25 @@ export default function KioskPage() {
                         </div>
 
                         {/* Actions */}
-                        <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-8 transition-opacity duration-500", !selectedService && "opacity-50 pointer-events-none")}>
+                        <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 transition-opacity duration-500 w-full", !selectedService && "opacity-50 pointer-events-none")}>
+                            {/* Print Button: Hidden on Mobile (md:flex), Visible on Tablets/Desktop */}
                             <button
                                 disabled={isPending || !selectedService}
                                 onClick={() => handleCreate('PRINT')}
-                                className="h-48 rounded-3xl bg-[#717074] hover:bg-[#5a595d] active:scale-95 transition-all text-white shadow-xl flex flex-col items-center justify-center gap-4 group"
+                                className="hidden md:flex h-32 md:h-48 rounded-3xl bg-[#717074] hover:bg-[#5a595d] active:scale-95 transition-all text-white shadow-xl flex-col items-center justify-center gap-4 group"
                             >
                                 <Receipt size={48} className="group-hover:scale-110 transition-transform" />
-                                <span className="text-2xl font-bold">Print Ticket</span>
+                                <span className="text-xl md:text-2xl font-bold">Print Ticket</span>
                             </button>
 
+                            {/* SMS Button: Full width on mobile */}
                             <button
                                 disabled={isPending || !selectedService}
                                 onClick={() => handleCreate('SMS')}
-                                className="h-48 rounded-3xl bg-[#8DC63F] hover:bg-[#7cb335] active:scale-95 transition-all text-white shadow-xl flex flex-col items-center justify-center gap-4 group"
+                                className="h-32 md:h-48 rounded-3xl bg-[#8DC63F] hover:bg-[#7cb335] active:scale-95 transition-all text-white shadow-xl flex flex-col items-center justify-center gap-4 group w-full"
                             >
                                 <MessageSquareText size={48} className="group-hover:scale-110 transition-transform" />
-                                <span className="text-2xl font-bold">SMS Token</span>
+                                <span className="text-xl md:text-2xl font-bold">SMS Token</span>
                             </button>
                         </div>
                     </div>
