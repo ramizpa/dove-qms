@@ -6,7 +6,7 @@
     "dev": "tsx server.ts",
     "db:push": "prisma db push",
     "build": "next build",
-    "start": "cross-env NODE_ENV=production tsx server.ts",
+    "start": "npx prisma db push && cross-env NODE_ENV=production tsx server.ts",
     "lint": "eslint"
   },
   "dependencies": {
